@@ -13,4 +13,5 @@ docker run -d \
   -v sonarqube_data:/opt/sonarqube/data \
   -v sonarqube_extensions:/opt/sonarqube/extensions \
   -v sonarqube_logs:/opt/sonarqube/logs \
+  -m 3g \
   sonarqube:community

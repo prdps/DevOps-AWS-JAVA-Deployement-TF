@@ -1,15 +1,15 @@
 output "jenkins_url" {
-  value = "http://localhost:8080"
+  value = "http://${aws_instance.DevOps-Project1-Jenkins.public_ip}:8080"
 }
 
 output "sonarqube_url" {
-  value = "http://localhost:9000"
+  value = "http://${aws_instance.DevOps-Project1-SonarQube.public_ip}:9000"
 }
 
 output "nexus_url" {
-  value = "http://localhost:8081"
+  value = "http://${aws_instance.DevOps-Project1-Nexus.public_ip}:8081"
 }
 
 output "tomcat_url" {
-  value = "http://localhost:8082"
+  value = "http://${aws_instance.DevOps-Project1-Tomcat.public_ip}:8080"
 }
