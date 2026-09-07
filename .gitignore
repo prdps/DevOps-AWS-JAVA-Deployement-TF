@@ -1,32 +1,44 @@
-# Terraform cache (NEVER commit)
+# Terraform working files and local state
 .terraform/
-
-# Terraform state files (can contain secrets)
 *.tfstate
 *.tfstate.*
-
-# Crash logs
+*.tfplan
+tfplan
 crash.log
+crash.*.log
 
-# Sensitive variable files
+# Local variable values and overrides (examples may be committed)
 *.tfvars
 *.tfvars.json
-
-# Override files
+!*.tfvars.example
+!*.tfvars.json.example
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-
-# CLI config files
 .terraformrc
 terraform.rc
 
-# Lock file (OPTIONAL: keep if you want consistent provider versions)
-# .terraform.lock.hcl
+# Local credentials, environment files, and private keys
+.env
+.env.*
+!.env.example
+.aws/
+.kube/
+.docker/
+credentials
+credentials.json
+kubeconfig
+kubeconfig.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
 
-# Mac / system files
+# Local logs and OS files
+*.log
 .DS_Store
 
-# Logs
-*.log
+# Keep .terraform.lock.hcl in Git for reproducible provider selection.

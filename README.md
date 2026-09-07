@@ -55,7 +55,7 @@ Terraform creates four security groups. The Jenkins controller and agent share o
 
 | File | Purpose |
 | --- | --- |
-| `provider.tf` | AWS provider configuration |
+| `provider.tf` | AWS region; authentication comes from an AWS profile or IAM role |
 | `variables.tf` | Region, key-pair name, and an unused instance-type variable |
 | `main.tf` | Five EC2 instances and their startup scripts |
 | `security.tf` | SSH and tool web-access rules |
@@ -68,24 +68,37 @@ Terraform creates four security groups. The Jenkins controller and agent share o
 
 The Nexus script is named `nexes.sh` in this project, and `main.tf` references that exact filename.
 
+See [SECURITY.md](SECURITY.md) for credential handling and historical exposure guidance.
+
 ## Before you start
 
 You need an AWS account with permission to manage EC2 and security groups, Git, Terraform, AWS CLI, and an existing EC2 SSH key pair.
 
 Review these settings before creating resources:
 
-1. **AWS credentials:** `provider.tf` contains hardcoded credentials. Revoke/rotate exposed keys, remove them from the file, and authenticate through an AWS CLI profile or IAM role. Removing credentials from a file does not remove them from Git history. Use a provider configuration without embedded keys:
-
-   ```hcl
-   provider "aws" {
-     region = var.aws_region
-   }
-   ```
+1. **AWS authentication:** Follow the AWS authentication section below. Confirm that you are using the intended account before running Terraform.
 
 2. **AMI and key pair:** Replace the hardcoded AMI in all five instance definitions with an appropriate Ubuntu x86_64 AMI for your region. The scripts use Ubuntu/Debian package commands. Set `us_key_pair` to a key pair that exists in that region.
 3. **Networking:** The configuration assumes a default VPC and default subnet with public connectivity. It does not create a VPC or subnets. Restrict the current `0.0.0.0/0` inbound rules to your IP and the specific server-to-server access your lab needs.
 4. **Instance sizes:** Sizes are hardcoded in `main.tf`; changing the `instance_type` variable currently has no effect. Adjust the resources directly if your builds or tools need more memory.
 5. **Installation scripts:** Check the pinned Nexus and Tomcat downloads and the Jenkins package source before use. The SonarQube image uses the floating `community` tag. These examples may need updates as software changes.
+
+## AWS authentication
+
+The AWS provider uses your local AWS profile or an IAM role; no access keys belong in `provider.tf`.
+
+For local development, prefer AWS CLI v2 with IAM Identity Center (SSO), if your AWS account has it configured:
+
+```bash
+aws configure sso --profile devops-learning
+aws sso login --profile devops-learning
+export AWS_PROFILE=devops-learning
+aws sts get-caller-identity
+```
+
+If you already have an approved AWS profile, set `AWS_PROFILE` to that profile instead. Keep authentication outside this repository. Run Terraform commands from the authenticated shell, including cleanup commands.
+
+For automation on EC2, use an attached IAM role with the permissions required by the job. Do not copy local AWS credentials to Jenkins. See [Credential handling](SECURITY.md) for Jenkins secrets, private files, and steps for credentials exposed in earlier commits. Those historical keys must be revoked in AWS; their revocation has not been verified.
 
 ## Getting started
 
